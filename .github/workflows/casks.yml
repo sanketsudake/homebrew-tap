@@ -42,9 +42,14 @@ jobs:
           mkdir -p "$taps"
           ln -s "$GITHUB_WORKSPACE" "$taps/homebrew-tap"
 
+      # token_conflicts is excluded because `portless` is also the name of an
+      # unrelated homebrew/core formula (portless.sh). Renaming the cask would
+      # break every existing install, so the conflict is accepted: the README
+      # gives the fully-qualified `sanketsudake/tap/portless` for that reason.
+      # This does not reproduce locally, where homebrew/core is not cloned.
       - name: Audit
         run: |
-          brew audit --cask --strict \
+          brew audit --cask --strict --except=token_conflicts \
             sanketsudake/tap/cines \
             sanketsudake/tap/cc-proxy \
             sanketsudake/tap/chrome-cdp \
