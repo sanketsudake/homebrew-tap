@@ -1,0 +1,51 @@
+# The casks here are written by machines -- GoReleaser for chrome-cdp, cc-proxy
+# and portless, a sed template in CHESS-in-Qt for cines -- so a regression in
+# any of those generators lands in this repo without a human reading the diff.
+# These two jobs are the only thing standing between that and users.
+name: Casks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  # Homebrew 7.0 deprecated the `*flight` stanzas in favour of `*_steps`, and
+  # turns the warning into an error on 2027-12-11. A generator that reverts to
+  # the old form should fail here, not surface as a warning on every `brew`
+  # command a user runs.
+  deprecated-stanzas:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: No deprecated flight blocks
+        run: |
+          if grep -rnE '^[[:space:]]*(uninstall_)?(pre|post)flight do' Casks/; then
+            echo "::error::a cask above uses a deprecated flight stanza; use the *_steps form"
+            exit 1
+          fi
+
+  audit:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Homebrew refuses to audit a cask that is not inside a tap, so the
+      # checkout has to be reachable at the path the tap name implies.
+      - name: Put the checkout where Homebrew expects the tap
+        run: |
+          taps="$(brew --repo)/Library/Taps/sanketsudake"
+          mkdir -p "$taps"
+          ln -s "$GITHUB_WORKSPACE" "$taps/homebrew-tap"
+
+      - name: Audit
+        run: |
+          brew audit --cask --strict \
+            sanketsudake/tap/cines \
+            sanketsudake/tap/cc-proxy \
+            sanketsudake/tap/chrome-cdp \
+            sanketsudake/tap/portless
