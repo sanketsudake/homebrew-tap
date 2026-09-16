@@ -38,6 +38,18 @@ brew install --cask sanketsudake/tap/portless
 
 Source: [sanketsudake/go-portless](https://github.com/sanketsudake/go-portless)
 
+### cines
+
+Two player chess.
+
+```sh
+brew install --cask sanketsudake/tap/cines
+```
+
+Source: [sanketsudake/CHESS-in-Qt](https://github.com/sanketsudake/CHESS-in-Qt)
+
 ---
 
-Casks in this tap are generated and pushed automatically by [GoReleaser](https://goreleaser.com) on each release — do not edit them by hand.
+Every cask here is generated on release — do not edit them by hand.
+`chrome-cdp`, `cc-proxy` and `portless` come from [GoReleaser](https://goreleaser.com);
+`cines` is rendered from a template in its own repository.
